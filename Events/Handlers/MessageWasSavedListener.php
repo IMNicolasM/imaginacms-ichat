@@ -106,7 +106,18 @@ class MessageWasSavedListener
       unset($message->conversation->users[$key]->allPermissions);
       unset($message->conversation->users[$key]->allSettings);
       unset($message->conversation->users[$key]->settings);
+      $url = $message->conversation->users[$key]->mediaFiles->profile->url;
+
+      unset($message->conversation->users[$key]->mediaFiles->profile);
+
+      $message->conversation->users[$key]->mediaFiles = (object)['profile' => (object)['url' => $url]];
     }
+
+    $url = $message->user->mediaFiles->profile->url;
+
+    unset($message->user->mediaFiles->profile);
+
+    $message->user->mediaFiles = (object)['profile' => (object)['url' => $url]];
 
     //Send notification
     $this->inotification->to(['broadcast' => $usersToNotifyId])->push([
