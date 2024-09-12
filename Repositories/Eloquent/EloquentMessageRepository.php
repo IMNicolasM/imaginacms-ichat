@@ -53,6 +53,12 @@ class EloquentMessageRepository extends EloquentBaseRepository implements Messag
       if (isset($filter->user)) {
         $query->where('user_id', $filter->user);
       }
+
+     
+      //Filter by not organization
+      if (isset($filter->withoutTenancy) && $filter->withoutTenancy)
+        $query->withoutTenancy();
+      
     }
 
     //Order by
