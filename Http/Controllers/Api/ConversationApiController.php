@@ -32,12 +32,22 @@ class ConversationApiController extends BaseApiController
       $data = $request->input('attributes') ?? [];//Get data
       //Set data to userSite conversation
       if (isset($data['is_user_site'])) {
+        $tenantId = tenant()->id ?? ($data["organization_id"] ?? null);
+        $users = [\Auth::id()];
+
+        // Include user tenant to conversation
+        if($tenantId) {
+          $organizationRepository = app('Modules\Isite\Repositories\OrganizationRepository');
+          $tenant = $organizationRepository->getItem($tenantId);
+          if ($tenant) array_push($users, $tenant->user_id);
+        }
+
         $data = [
-          "private" => 0,
-          "organization_id" => tenant()->id ?? ($data["organization_id"] ?? null),
+          "private" => 1,
+          "organization_id" => $tenantId,
           "entity_type" => "Modules\User\Entities\Sentinel\User",
           "entity_id" => \Auth::id(),
-          "users" => [\Auth::id()]
+          "users" => $users
         ];
       }
       //Validate Request
